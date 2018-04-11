@@ -1,0 +1,31 @@
+#c++17 and gnu99
+if(CMAKE_VERSION VERSION_LESS "3.8")
+  include(CheckCXXCompilerFlag)
+  CHECK_CXX_COMPILER_FLAG("-std=c++17" COMPILER_SUPPORTS_CXX17)
+  if(NOT COMPILER_SUPPORTS_CXX17)
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++17 support.")
+  endif()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+  include(CheckCCompilerFlag)
+  CHECK_C_COMPILER_FLAG("-std=gnu99" COMPILER_SUPPORTS_GNU99)
+  if(NOT COMPILER_SUPPORTS_GNU99)
+    message(FATAL_ERROR "The compiler ${CMAKE_C_COMPILER} has no GNU C99 support.")
+  endif()
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
+else()
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_C_STANDARD 99)
+  set(CMAKE_C_EXTENSIONS OFF)
+  set(C_STANDARD_REQUIRED ON)
+endif()
+
+find_package(Threads REQUIRED)
+
+set(common_deps
+    ${CMAKE_THREAD_LIBS_INIT})
+
+add_subdirectory(dist_tracing)
+add_executable(run main.cc)
+target_link_libraries(run ${common_deps} disttracing)
